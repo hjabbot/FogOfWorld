@@ -1,6 +1,8 @@
 import shapely
 import numpy as np
 
+from database import CITY_DB, COUNTRY_DB
+
 class City:
     """
     Stores information about a single city, including name, country, and coordinates
@@ -8,16 +10,17 @@ class City:
     def __init__(self, name, country=None, coords=None):
         self.name = name
 
+        self._gdf_row = CITY_DB[CITY_DB.name == name]
+        assert(len(self._gdf_row) == 1)
+
+
         # Retrieve country from database if none provided
-        if country is None: self.set_country(name)
+        if country is None: self.country = Country(self._gdf_row.country)
         else:               self.country = country
 
         # Retrieve coordinates from database if none provided
         if coords is None: self.set_coords(name)
         else:              self.coords = coords
-
-    def set_country(self, name):
-        pass
 
     def set_coords(self, name):
         pass
@@ -31,20 +34,21 @@ class City:
 
 class Country:
     """
-    Stores information about a single country, including name, shape, and shape resolution
+    Stores information about a single country, including name and shape
     """
-    def __init__(self, name, shape=None, resolution=None):
+    def __init__(self, name, shape=None):
         self.name = name
 
-        # Set default resolution if not user specified
-        if resolution is None:  resolution = 110
-        else:                   resolution = resolution
+
+        self._gdf_row = COUNTRY_DB[COUNTRY_DB.name == name]
+        assert(len(self._gdf_row) == 1)
+
 
         # Retrieve country shape from database if none provided
-        if shape is None:   self.set_shape(name, resolution)
+        if shape is None:   self.set_shape(name)
         else:               self.shape = shape
 
-    def set_shape(self, name, resolution):
+    def set_shape(self, name):
         pass
 
     def __str__(self):
