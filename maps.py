@@ -1,5 +1,3 @@
-from locations import City, Country, Terminator
-from trips import Trip
 import plotly.express as px
 
 import geopandas as gpd
@@ -17,14 +15,24 @@ class TripMap:
     pass
 
 class TerminatorMap:
-    def __init__(self, time):
-        self.time = time
-        self.terminator = Terminator(self.time)
+    def __init__(self, terminator):
+        """
+        Creates figure of terminator boundary, shows night region of earth as shaded
+
+        Args:
+            terminator (locations.Terminator): Terminator object defined in locations.py
+        """
+        self.terminator = terminator
+
+        # Terminator marks binary field
+        # Set data as 'tod' (time of day), with 'night' as the value to shade
         self.df = gpd.GeoDataFrame(
                     geometry    = [self.terminator.polygon],
                     index       = [0],
                     data        = {'tod': 'night'}
                 )
+        
+        # Draw shade in the 'night' area
         self.fig = px.choropleth(
                     self.df,
                     geojson     = self.df.geometry,
