@@ -38,5 +38,6 @@ class TerminatorMap:
                     geojson     = self.df.geometry,
                     locations   = self.df.index,
                     color       = 'tod',
-                    color_discrete_map = 'rgba(0,0,0,0.5)'
+                    color_discrete_map = {'night':'rgba(0,0,0,0.5)',
+                                          'day'  :'rgba(0,0,0,0)'}
         )
