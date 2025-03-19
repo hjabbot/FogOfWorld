@@ -1,3 +1,4 @@
+import shapely
 import datetime
 
 class Position:
@@ -10,6 +11,10 @@ class Position:
 
     def __str__(self):
         return f'({self.lon},{self.lat})'
+    
+    @property
+    def point(self):
+        return shapely.Point(self.lon, self.lat)
     
 
 class Time:
