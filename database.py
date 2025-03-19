@@ -3,12 +3,6 @@ import geopandas as gpd
 import shapely
 import json
 
-
-# Initialise databases for importing into other sections
-CITY_DB    = reduce_city_data('data/cities.csv')
-COUNTRY_DB = reduce_country_data('data/countries.csv')
-
-
 def reduce_city_data(filename="data/cities.csv", 
                      country_amendments_filename="data/nan_country_by_city.json"):
     """
@@ -164,14 +158,9 @@ def find_city_in_country(city_name, country_name):
 
     assert(n_countries_extracted == 1), \
           f'Found too many countries matching {country_name}!'
-
-    # If only one city with that name
-    if n_cities_extracted == 1:
-        # Correct rows already extracted
-        return _city_gdf_rows, _country_gdf_rows
     
     # If multiple cities with that name
-    elif n_cities_extracted > 1:
+    if n_cities_extracted > 1:
         # From list of countries containing city_name, find the one that matches the country_name
         possible_countries    = set(_city_gdf_rows.country.to_list())
         allowable_countries   = set(_country_gdf_rows.alt_names.values[0])
@@ -184,4 +173,19 @@ def find_city_in_country(city_name, country_name):
         overlapping_country = overlapping_countries[0]
         _city_gdf_rows      = _city_gdf_rows[_city_gdf_rows.country == overlapping_country]
 
-        return _city_gdf_rows, _country_gdf_rows
+    # By this stage, _city_gdf_rows should both just be one row _country_gdf_rows 
+    # Amend country name in _city_gdf_rows to be the same as the primary name in _country_gdf_rows
+    # As it stands, it could still be one of the country's alt_names
+    if _city_gdf_rows.country.values[0] != _country_gdf_rows.name.values[0]:
+        idx = _city_gdf_rows.index[0]
+        print(f"Changed {city_name}'s country from \"{_city_gdf_rows.country.values[0]}\" to \"{_country_gdf_rows.name.values[0]}\"")
+        _city_gdf_rows.at[idx, 'country'] = _country_gdf_rows.name.values[0]
+
+
+    return _city_gdf_rows, _country_gdf_rows
+
+
+
+# Initialise databases for importing into other sections
+CITY_DB    = reduce_city_data('data/cities.csv')
+COUNTRY_DB = reduce_country_data('data/countries.csv')
