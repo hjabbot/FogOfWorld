@@ -1,33 +1,31 @@
 import shapely
 import numpy as np
 
-from database import CITY_DB, COUNTRY_DB
+from database import CITY_DB, COUNTRY_DB, find_city_in_country
+from coordinates import Position
 
 class City:
     """
     Stores information about a single city, including name, country, and coordinates
     """
-    def __init__(self, name, country=None, coords=None):
-        self.name = name
+    def __init__(self, city_name=None, country_name=None):
 
-        self._gdf_row = CITY_DB[CITY_DB.name == name]
-        assert(len(self._gdf_row) == 1)
+        # Extract out city details from city and country name        
+        _city_gdf_row = find_city_in_country(city_name, country_name)
+        
+        # Fill in metadata about city
+        self.name    = _city_gdf_row.name
+        self.country = Country(_city_gdf_row.country.values[0]) 
+        # Using returned value for country name instead of country_name because 
+        # country_name might be one of the alternative names rather than the primary name 
 
-
-        # Retrieve country from database if none provided
-        if country is None: self.country = Country(self._gdf_row.country)
-        else:               self.country = country
-
-        # Retrieve coordinates from database if none provided
-        if coords is None: self.set_coords(name)
-        else:              self.coords = coords
-
-    def set_coords(self, name):
-        pass
+        # There should only be one row in the gdf, so extract out the one shapely.Point
+        lon, lat = _city_gdf_row.geometry.values[0].xy
+        self.coords = Position(lat, lon)
 
     @property
     def point(self):
-        return shapely.Point((self.coords.lon, self.coords.lat))
+        return self.coords.point
     
     def __str__(self):
         return f'{self.name}, {self.country} {self.coords}'
@@ -36,20 +34,23 @@ class Country:
     """
     Stores information about a single country, including name and shape
     """
-    def __init__(self, name, shape=None):
-        self.name = name
+    def __init__(self, country_name):
 
-
-        self._gdf_row = COUNTRY_DB[COUNTRY_DB.name == name]
-        assert(len(self._gdf_row) == 1)
-
+        # Fill in metadata about country 
+        self.name = country_name
+        
+        # There should only be one row extracted
+        _gdf_row = COUNTRY_DB[COUNTRY_DB.name == country_name]
 
         # Retrieve country shape from database if none provided
-        if shape is None:   self.set_shape(name)
-        else:               self.shape = shape
+        self.shape = _gdf_row.geometry.values[0]
 
-    def set_shape(self, name):
-        pass
+        lat, lon = _gdf_row.coordinates.values[0]
+        self.coords = Position(lat, lon)
+
+    @property
+    def point(self):
+        return self.coords.point
 
     def __str__(self):
         return f'{self.name}'
