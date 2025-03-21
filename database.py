@@ -2,6 +2,7 @@ import pandas as pd
 import geopandas as gpd
 import shapely
 import json
+import pickle
 
 def reduce_city_data(filename="data/cities.csv", 
                      country_amendments_filename="data/nan_country_by_city.json"):
@@ -187,5 +188,20 @@ def find_city_in_country(city_name, country_name):
 
 
 # Initialise databases for importing into other sections
-CITY_DB    = reduce_city_data('data/cities.csv')
-COUNTRY_DB = reduce_country_data('data/countries.csv')
+with open('data/CITY_DB.pickle', 'rb') as fp:
+    CITY_DB = pickle.load(fp)
+
+with open('data/COUNTRY_DB.pickle', 'rb') as fp:
+    COUNTRY_DB = pickle.load(fp)
+
+
+if __name__ == '__main__':
+    # Create the precomputed pickles to save compute time
+    with open('CITY_DB.pickle', 'wb') as fp:
+        CITY_DB = reduce_city_data('data/cities.csv')
+        pickle.dump(CITY_DB, fp, protocol=pickle.HIGHEST_PROTOCOL)
+
+    with open('COUNTRY_DB.pickle', 'wb') as fp:
+        COUNTRY_DB = reduce_country_data('data/countries.csv')
+        pickle.dump(COUNTRY_DB, fp, protocol=pickle.HIGHEST_PROTOCOL)
+
