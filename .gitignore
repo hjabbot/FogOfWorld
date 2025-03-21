@@ -1,4 +1,4 @@
-.venv
-venv
+.venv*
+venv*
 playground.ipynb
 visited_cities.txt
