@@ -1,5 +1,6 @@
 numpy
 pandas
+geopandas
 shapely
 plotly
 nbformat>=4.20
