@@ -17,7 +17,7 @@ class City:
         self.country = Country(_city_gdf_row.country.values[0]) 
         # Using returned value for country name instead of country_name because 
         # country_name might be one of the alternative names rather than the primary name 
-
+        self.gdf = _city_gdf_row
         # There should only be one row in the gdf, so extract out the one shapely.Point
         lon, lat = _city_gdf_row.geometry.values[0].xy
         self.coords = Position(lat, lon)
