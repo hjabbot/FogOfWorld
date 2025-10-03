@@ -183,7 +183,7 @@ def find_city_in_country(city_name, country_name):
         _city_gdf_rows.at[idx, 'country'] = _country_gdf_rows.name.values[0]
 
 
-    return _city_gdf_rows, _country_gdf_rows
+    return _city_gdf_rows
 
 
 

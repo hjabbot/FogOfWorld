@@ -1,5 +1,5 @@
 from locations import Terminator, Country, City
-from trips import Trip
+# from trips import Trip
 from maps import TerminatorMap, CityMap, TripMap, CountryMap, CombinedMap
 from coordinates import Time, Position
 
@@ -40,12 +40,14 @@ if __name__ == '__main__':
 
     current_time        = Time(int(datetime.datetime.now(datetime.UTC).timestamp()))
     current_terminator  = Terminator(current_time)
-    terminator_map      = TerminatorMap(current_terminator)
 
     cities      = [City(city_name=k, country_name=v) for k, v in COUNTRY_BY_CITY.items()]
     countries   = [city.country for city in cities]
 
-    print(list(city.country.name for city in cities))
+    # print(list(city.country.name for city in cities))
+    combined_map = CombinedMap(country_lists=[countries], 
+                               terminator=current_terminator)
+    combined_map.show()
 
 
 

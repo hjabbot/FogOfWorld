@@ -9,7 +9,6 @@ class City:
     Stores information about a single city, including name, country, and coordinates
     """
     def __init__(self, city_name=None, country_name=None):
-
         # Extract out city details from city and country name        
         _city_gdf_row = find_city_in_country(city_name, country_name)
         
@@ -40,12 +39,12 @@ class Country:
         self.name = country_name
         
         # There should only be one row extracted
-        _gdf_row = COUNTRY_DB[COUNTRY_DB.name == country_name]
+        self.gdf = COUNTRY_DB[COUNTRY_DB.name == country_name]
 
         # Retrieve country shape from database if none provided
-        self.shape = _gdf_row.geometry.values[0]
+        self.shape = self.gdf.geometry.values[0]
 
-        lat, lon = _gdf_row.coordinates.values[0]
+        lat, lon = self.gdf.coordinates.values[0]
         self.coords = Position(lat, lon)
 
     @property
