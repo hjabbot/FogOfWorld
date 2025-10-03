@@ -72,7 +72,16 @@ class CombinedMap:
 
 
 class CountryMap:
-    def __init__(self, country_list, c='rgba(  0,255,  0, 0.5)'):
+    def __init__(self, country_list, c='rgba(   0,255,255, 0.5)'):
+        """
+        Creates a map of country outlines from list of Country objects
+
+        Args:
+            country_list (array of locations.Country):
+                Array of countries to be coloured in
+            c (str):
+                RGBA string (or other ID) for colour to shade country
+        """
 
         country_gdf = pd.concat([country.gdf for country in country_list])
         country_gdf = gpd.GeoDataFrame(country_gdf, geometry='geometry')
@@ -82,8 +91,10 @@ class CountryMap:
         self.fig = px.choropleth(country_gdf,
                                  locations=country_gdf.index,
                                  geojson=country_gdf.geometry,
-                                 color='colour',                 # Colour based on column values
-                                 color_discrete_map={'name':c})  # Colour to make the map
+                                 color='colour',            # Colour based on column values
+                                 color_discrete_map={c:c})  # Colour to make the map
+                                 # Yes this is weird, no I can't be arsed changing it
+                                 # Can't set up a solid colour, so have to use c to set colour per line
 
 
 class CityMap:
@@ -106,7 +117,7 @@ class TerminatorMap:
 
         # Terminator marks binary field
         # Set data as 'tod' (time of day), with 'night' as the value to shade
-        self.df = gpd.GeoDataFrame(
+        terminator_df = gpd.GeoDataFrame(
                     geometry    = [self.terminator.polygon],
                     index       = [0],
                     data        = {'tod': 'night'}
@@ -114,9 +125,9 @@ class TerminatorMap:
         
         # Draw shade in the 'night' area
         self.fig = px.choropleth(
-                    self.df,
-                    geojson     = self.df.geometry,
-                    locations   = self.df.index,
+                    terminator_df,
+                    geojson     = terminator_df.geometry,
+                    locations   = terminator_df.index,
                     color       = 'tod',
                     color_discrete_map = {'night':'rgba(0,0,0,0.5)',
                                           'day'  :'rgba(0,0,0,0)'}
